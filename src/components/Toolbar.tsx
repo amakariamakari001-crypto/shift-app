@@ -1,10 +1,9 @@
 'use client';
 
-import { useRef } from 'react';
-import { Download, Upload, Link, Printer, FileImage, Plus } from 'lucide-react';
+import { Link, Printer, FileImage, Plus } from 'lucide-react';
 import type { ShiftData } from '@/lib/types';
 import { encodeToUrl } from '@/lib/encoding';
-import { exportToJson, exportToPdf } from '@/lib/exportPdf';
+import { exportToPdf } from '@/lib/exportPdf';
 
 interface Props {
   yearMonth: string;
@@ -15,28 +14,6 @@ interface Props {
 }
 
 export default function Toolbar({ yearMonth, onYearMonthChange, shiftData, onLoadData, onAddStaff }: Props) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  function handleExportJson() {
-    exportToJson(shiftData, `シフト表_${yearMonth}.json`);
-  }
-
-  function handleImportJson(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      try {
-        const data = JSON.parse(ev.target!.result as string) as ShiftData;
-        onLoadData(data);
-      } catch {
-        alert('JSONファイルの読み込みに失敗しました');
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = '';
-  }
-
   function handleShareUrl() {
     const encoded = encodeToUrl(shiftData);
     const url = `${window.location.origin}${window.location.pathname}?d=${encoded}`;
@@ -90,30 +67,6 @@ export default function Toolbar({ yearMonth, onYearMonthChange, shiftData, onLoa
           スタッフ追加
         </button>
 
-        <button
-          onClick={handleExportJson}
-          className="flex items-center gap-1 px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs text-gray-600 hover:bg-gray-50 transition-colors"
-          title="JSONエクスポート"
-        >
-          <Download size={13} />
-          保存
-        </button>
-
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          className="flex items-center gap-1 px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs text-gray-600 hover:bg-gray-50 transition-colors"
-          title="JSONインポート"
-        >
-          <Upload size={13} />
-          読込
-        </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".json"
-          onChange={handleImportJson}
-          className="hidden"
-        />
 
         <button
           onClick={handleShareUrl}
