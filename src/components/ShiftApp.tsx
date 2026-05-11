@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useShiftData } from '@/hooks/useShiftData';
 import { useDateRange } from '@/hooks/useDateRange';
 import ShiftGrid from './ShiftGrid';

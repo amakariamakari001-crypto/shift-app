@@ -14,7 +14,6 @@ interface Props {
   isFreeRow?: boolean;
   hideAggColumns?: boolean;
   rowBg?: string;
-  showDropIndicator?: boolean;
   onOpenModal: (rowId: string | 'free', dateKey: string, dateColumn: DateColumn, currentValue: CellValue) => void;
   onNameChange: (name: string) => void;
   onDelete?: () => void;
@@ -26,7 +25,6 @@ interface Props {
 
 function StaffRow({
   rowId, index, name, cells, dateColumns, aggregation, isFreeRow, hideAggColumns, rowBg,
-  showDropIndicator,
   onOpenModal, onNameChange, onDelete, onClear, onDragStart, onDrop, onDragEnter,
 }: Props) {
   const handleCellClick = useCallback(

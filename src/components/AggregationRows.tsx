@@ -8,7 +8,7 @@ interface Props {
   staffRows: StaffRowData[];
 }
 
-function AggregationRows(_props: Props) {
+function AggregationRows(_props: Props) { // eslint-disable-line @typescript-eslint/no-unused-vars
   return null;
 }
 
