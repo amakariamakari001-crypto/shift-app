@@ -16,11 +16,43 @@ interface Props {
 function HeaderRow({ dateColumns, staffRows, onClearDate, isReadOnly }: Props) {
   return (
     <thead className="select-none">
-      {/* 行1: 日付・曜日 */}
+      {/* 行1: 日別出勤人数（sticky） */}
+      <tr>
+        <td
+          className="sticky left-0 top-0 z-30 bg-blue-50 border border-gray-300 text-xs font-semibold text-blue-700 px-2 whitespace-nowrap"
+          style={{ minWidth: 156, maxWidth: 156, width: 156, height: 28 }}
+        >
+          日別出勤人数
+        </td>
+        {dateColumns.map(col => {
+          const count = computeDailyCount(staffRows, col.dateKey);
+          const bg = getCellBgColor(col);
+          return (
+            <td
+              key={col.dateKey}
+              className="sticky top-0 z-20 border border-gray-300 text-center text-xs font-semibold"
+              style={{
+                backgroundColor: bg || '#eff6ff',
+                width: 44,
+                minWidth: 44,
+                color: count === 0 ? '#9ca3af' : '#1d4ed8',
+              }}
+            >
+              {count === 0 ? '' : count % 1 === 0 ? count : count.toFixed(1)}
+            </td>
+          );
+        })}
+        <td
+          className="sticky top-0 z-20 border border-gray-300 bg-blue-50"
+          colSpan={2}
+        />
+      </tr>
+
+      {/* 行2: 日付・曜日 */}
       <tr>
         <th
-          className="sticky left-0 top-0 z-30 bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-600 whitespace-nowrap px-2 text-left"
-          style={{ minWidth: 156, maxWidth: 156, width: 156, height: 44 }}
+          className="sticky left-0 z-30 bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-600 whitespace-nowrap px-2 text-left"
+          style={{ minWidth: 156, maxWidth: 156, width: 156, height: 44, top: 28, position: 'sticky' }}
         >
           スタッフ名
         </th>
@@ -30,12 +62,13 @@ function HeaderRow({ dateColumns, staffRows, onClearDate, isReadOnly }: Props) {
           return (
             <th
               key={col.dateKey}
-              className="sticky top-0 z-20 border border-gray-300 p-0 group/col"
+              className="sticky z-20 border border-gray-300 p-0 group/col"
               style={{
                 backgroundColor: bg || '#f3f4f6',
                 width: 44,
                 minWidth: 44,
                 maxWidth: 44,
+                top: 28,
               }}
             >
               <div className="relative flex flex-col items-center leading-tight py-0.5">
@@ -76,56 +109,17 @@ function HeaderRow({ dateColumns, staffRows, onClearDate, isReadOnly }: Props) {
           );
         })}
         <th
-          className="sticky top-0 z-20 bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-600 px-1 text-center"
-          style={{ minWidth: 36, width: 36, height: 44 }}
+          className="sticky z-20 bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-600 px-1 text-center"
+          style={{ minWidth: 36, width: 36, height: 44, top: 28, position: 'sticky' }}
         >
           休
         </th>
         <th
-          className="sticky top-0 z-20 bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-600 px-1 text-center leading-tight"
-          style={{ minWidth: 48, width: 48 }}
+          className="sticky z-20 bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-600 px-1 text-center leading-tight"
+          style={{ minWidth: 48, width: 48, top: 28, position: 'sticky' }}
         >
           〇－<br />有給
         </th>
-      </tr>
-
-      {/* 行2: 日別出勤人数（sticky） */}
-      <tr>
-        <td
-          className="sticky left-0 z-30 bg-blue-50 border border-gray-300 text-xs font-semibold text-blue-700 px-2 whitespace-nowrap"
-          style={{
-            minWidth: 156, maxWidth: 156, width: 156, height: 28,
-            top: 44,
-            position: 'sticky',
-          }}
-        >
-          日別出勤人数
-        </td>
-        {dateColumns.map(col => {
-          const count = computeDailyCount(staffRows, col.dateKey);
-          const bg = getCellBgColor(col);
-          return (
-            <td
-              key={col.dateKey}
-              className="border border-gray-300 text-center text-xs font-semibold"
-              style={{
-                backgroundColor: bg || '#eff6ff',
-                width: 44,
-                minWidth: 44,
-                color: count === 0 ? '#9ca3af' : '#1d4ed8',
-                top: 44,
-                position: 'sticky',
-              }}
-            >
-              {count === 0 ? '' : count % 1 === 0 ? count : count.toFixed(1)}
-            </td>
-          );
-        })}
-        <td
-          className="border border-gray-300 bg-blue-50"
-          colSpan={2}
-          style={{ top: 44, position: 'sticky' }}
-        />
       </tr>
     </thead>
   );
