@@ -42,6 +42,7 @@ function ShiftGrid({
 }: Props) {
   const dragSrcIdx = useRef<number>(-1);
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+  const [hoveredDateKey, setHoveredDateKey] = useState<string | null>(null);
 
   const handleDragStart = useCallback((srcIndex: number, rowData: StaffRowData | null) => {
     dragSrcIdx.current = srcIndex;
@@ -98,7 +99,7 @@ function ShiftGrid({
     >
       <table className="border-collapse" style={{ borderSpacing: 0, tableLayout: 'fixed' }}>
         {!staffRowOnly && (
-          <HeaderRow dateColumns={dateColumns} staffRows={staffRows} onClearDate={onClearDate} isReadOnly={isReadOnly} />
+          <HeaderRow dateColumns={dateColumns} staffRows={staffRows} onClearDate={onClearDate} isReadOnly={isReadOnly} hoveredDateKey={hoveredDateKey} onDateHover={setHoveredDateKey} />
         )}
 
         {staffRowOnly && (
@@ -160,6 +161,7 @@ function ShiftGrid({
                     dateColumns={dateColumns}
                     isFreeRow
                     isReadOnly={isReadOnly}
+                    hoveredDateKey={hoveredDateKey}
                     onOpenModal={onOpenModal}
                     onNameChange={onFreeRowNameChange}
                     onDelete={onDeleteFreeRow}
@@ -185,6 +187,7 @@ function ShiftGrid({
                   aggregation={agg}
                   hideAggColumns={staffRowOnly}
                   isReadOnly={isReadOnly}
+                  hoveredDateKey={hoveredDateKey}
                   onOpenModal={onOpenModal}
                   onNameChange={name => onNameChange(item.row.id, name)}
                   onDelete={isReadOnly ? undefined : () => onDeleteStaff(item.row.id)}

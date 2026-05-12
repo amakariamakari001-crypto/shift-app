@@ -14,6 +14,7 @@ interface Props {
   isFreeRow?: boolean;
   hideAggColumns?: boolean;
   isReadOnly?: boolean;
+  hoveredDateKey?: string | null;
   rowBg?: string;
   onOpenModal: (rowId: string | 'free', dateKey: string, dateColumn: DateColumn, currentValue: CellValue) => void;
   onNameChange: (name: string) => void;
@@ -25,7 +26,7 @@ interface Props {
 }
 
 function StaffRow({
-  rowId, index, name, cells, dateColumns, aggregation, isFreeRow, hideAggColumns, isReadOnly, rowBg,
+  rowId, index, name, cells, dateColumns, aggregation, isFreeRow, hideAggColumns, isReadOnly, hoveredDateKey, rowBg,
   onOpenModal, onNameChange, onDelete, onClear, onDragStart, onDrop, onDragEnter,
 }: Props) {
   const handleCellClick = useCallback(
@@ -110,6 +111,7 @@ function StaffRow({
           dateColumn={col}
           bgOverride={rowBg}
           isReadOnly={isReadOnly}
+          isDateHovered={hoveredDateKey === col.dateKey}
           onClick={() => handleCellClick(col.dateKey, col, cells[col.dateKey] ?? '')}
         />
       ))}

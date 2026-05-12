@@ -11,9 +11,11 @@ interface Props {
   staffRows: StaffRowData[];
   onClearDate: (dateKey: string) => void;
   isReadOnly?: boolean;
+  hoveredDateKey?: string | null;
+  onDateHover?: (dateKey: string | null) => void;
 }
 
-function HeaderRow({ dateColumns, staffRows, onClearDate, isReadOnly }: Props) {
+function HeaderRow({ dateColumns, staffRows, onClearDate, isReadOnly, hoveredDateKey, onDateHover }: Props) {
   return (
     <thead className="select-none">
       {/* 行1: 日別出勤人数（sticky） */}
@@ -27,16 +29,20 @@ function HeaderRow({ dateColumns, staffRows, onClearDate, isReadOnly }: Props) {
         {dateColumns.map(col => {
           const count = computeDailyCount(staffRows, col.dateKey);
           const bg = getCellBgColor(col);
+          const isHovered = hoveredDateKey === col.dateKey;
           return (
             <td
               key={col.dateKey}
-              className="sticky top-0 z-20 border border-gray-300 text-center text-xs font-semibold"
+              className="sticky top-0 z-20 border border-gray-300 text-center text-xs font-semibold cursor-default"
               style={{
-                backgroundColor: bg || '#eff6ff',
+                backgroundColor: isHovered ? '#bfdbfe' : (bg || '#eff6ff'),
                 width: 44,
                 minWidth: 44,
                 color: count === 0 ? '#9ca3af' : '#1d4ed8',
+                transition: 'background-color 0.1s',
               }}
+              onMouseEnter={() => onDateHover?.(col.dateKey)}
+              onMouseLeave={() => onDateHover?.(null)}
             >
               {count === 0 ? '' : count % 1 === 0 ? count : count.toFixed(1)}
             </td>
