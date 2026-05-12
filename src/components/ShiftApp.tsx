@@ -71,7 +71,6 @@ function ShiftSection({
           yearMonth={shiftData.yearMonth}
           onYearMonthChange={isReadOnly ? undefined : setYearMonth}
           shiftData={shiftData}
-          onLoadData={loadData}
           onAddStaff={isReadOnly ? undefined : addStaffRow}
           isReadOnly={isReadOnly}
         />

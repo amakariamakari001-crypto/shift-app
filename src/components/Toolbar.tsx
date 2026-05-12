@@ -9,12 +9,11 @@ interface Props {
   yearMonth: string;
   onYearMonthChange?: (ym: string) => void;
   shiftData: ShiftData;
-  onLoadData: (data: ShiftData) => void;
   onAddStaff?: () => void;
   isReadOnly?: boolean;
 }
 
-export default function Toolbar({ yearMonth, onYearMonthChange, shiftData, onLoadData, onAddStaff, isReadOnly }: Props) {
+export default function Toolbar({ yearMonth, onYearMonthChange, shiftData, onAddStaff, isReadOnly }: Props) {
   function handleShareUrl() {
     const encoded = encodeToUrl(shiftData);
     const url = `${window.location.origin}${window.location.pathname}?d=${encoded}`;
