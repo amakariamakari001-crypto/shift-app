@@ -36,7 +36,7 @@ function ShiftSection({
     shiftData, setYearMonth, setCellValue,
     setStaffName, setFreeRowName, clearFreeRow, clearFreeRowCells, setCountRowName,
     addStaffRow, removeStaffRow,
-    clearStaffCells, clearDateColumn, insertStaffRowAt, reorderAll, reorderStaffRows, loadData,
+    clearStaffCells, clearDateColumn, insertStaffRowAt, reorderAll, reorderStaffRows,
   } = useShiftData(storageKey);
 
   useEffect(() => {
