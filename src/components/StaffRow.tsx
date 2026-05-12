@@ -13,6 +13,7 @@ interface Props {
   aggregation?: StaffAggregation;
   isFreeRow?: boolean;
   hideAggColumns?: boolean;
+  isReadOnly?: boolean;
   rowBg?: string;
   onOpenModal: (rowId: string | 'free', dateKey: string, dateColumn: DateColumn, currentValue: CellValue) => void;
   onNameChange: (name: string) => void;
@@ -24,7 +25,7 @@ interface Props {
 }
 
 function StaffRow({
-  rowId, index, name, cells, dateColumns, aggregation, isFreeRow, hideAggColumns, rowBg,
+  rowId, index, name, cells, dateColumns, aggregation, isFreeRow, hideAggColumns, isReadOnly, rowBg,
   onOpenModal, onNameChange, onDelete, onClear, onDragStart, onDrop, onDragEnter,
 }: Props) {
   const handleCellClick = useCallback(
@@ -81,6 +82,7 @@ function StaffRow({
             value={name}
             onChange={e => onNameChange(e.target.value)}
             draggable={false}
+            readOnly={isReadOnly}
             className="flex-1 min-w-0 h-full text-xs bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-inset focus:ring-blue-300 px-1"
             placeholder={isFreeRow ? '自由記述' : 'スタッフ名'}
           />

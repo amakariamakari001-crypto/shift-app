@@ -1,6 +1,7 @@
 import type { PresetValue } from './types';
 
 export const STAFF_ROW_COUNT = 22;
+export const EDIT_KEY = 'shift2025';
 export const MAX_FREE_TEXT_LENGTH = 4;
 export const LOCAL_STORAGE_KEY = 'shift-app-v1';
 

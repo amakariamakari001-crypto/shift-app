@@ -7,13 +7,14 @@ import { exportToPdf } from '@/lib/exportPdf';
 
 interface Props {
   yearMonth: string;
-  onYearMonthChange: (ym: string) => void;
+  onYearMonthChange?: (ym: string) => void;
   shiftData: ShiftData;
   onLoadData: (data: ShiftData) => void;
-  onAddStaff: () => void;
+  onAddStaff?: () => void;
+  isReadOnly?: boolean;
 }
 
-export default function Toolbar({ yearMonth, onYearMonthChange, shiftData, onLoadData, onAddStaff }: Props) {
+export default function Toolbar({ yearMonth, onYearMonthChange, shiftData, onLoadData, onAddStaff, isReadOnly }: Props) {
   function handleShareUrl() {
     const encoded = encodeToUrl(shiftData);
     const url = `${window.location.origin}${window.location.pathname}?d=${encoded}`;
@@ -37,8 +38,9 @@ export default function Toolbar({ yearMonth, onYearMonthChange, shiftData, onLoa
         <div className="flex items-center gap-1">
           <select
             value={yearMonth.split('-')[0]}
-            onChange={e => onYearMonthChange(`${e.target.value}-${yearMonth.split('-')[1]}`)}
-            className="border border-gray-300 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+            onChange={e => onYearMonthChange?.(`${e.target.value}-${yearMonth.split('-')[1]}`)}
+            disabled={isReadOnly}
+            className="border border-gray-300 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {Array.from({ length: 21 }, (_, i) => 2020 + i).map(y => (
               <option key={y} value={y}>{y}年</option>
@@ -46,8 +48,9 @@ export default function Toolbar({ yearMonth, onYearMonthChange, shiftData, onLoa
           </select>
           <select
             value={yearMonth.split('-')[1]}
-            onChange={e => onYearMonthChange(`${yearMonth.split('-')[0]}-${e.target.value}`)}
-            className="border border-gray-300 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+            onChange={e => onYearMonthChange?.(`${yearMonth.split('-')[0]}-${e.target.value}`)}
+            disabled={isReadOnly}
+            className="border border-gray-300 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')).map(m => (
               <option key={m} value={m}>{Number(m)}月</option>
@@ -58,14 +61,16 @@ export default function Toolbar({ yearMonth, onYearMonthChange, shiftData, onLoa
       </div>
 
       <div className="flex items-center gap-1 ml-auto flex-wrap">
-        <button
-          onClick={onAddStaff}
-          className="flex items-center gap-1 px-3 py-1.5 bg-blue-500 text-white rounded-lg text-xs hover:bg-blue-600 transition-colors"
-          title="スタッフ追加"
-        >
-          <Plus size={13} />
-          スタッフ追加
-        </button>
+        {!isReadOnly && (
+          <button
+            onClick={onAddStaff}
+            className="flex items-center gap-1 px-3 py-1.5 bg-blue-500 text-white rounded-lg text-xs hover:bg-blue-600 transition-colors"
+            title="スタッフ追加"
+          >
+            <Plus size={13} />
+            スタッフ追加
+          </button>
+        )}
 
 
         <button

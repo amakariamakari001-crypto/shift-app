@@ -17,6 +17,7 @@ interface Props {
   freeTextRow: FreeTextRowData;
   staffRows: StaffRowData[];
   staffRowOnly?: boolean;
+  isReadOnly?: boolean;
   onOpenModal: (rowId: string | 'free', dateKey: string, dateColumn: DateColumn, currentValue: CellValue) => void;
   onFreeRowNameChange: (name: string) => void;
   onDeleteFreeRow?: () => void;
@@ -35,7 +36,7 @@ type RowItem =
 
 function ShiftGrid({
   storageKey, dateColumns, freeRowName, freeRowIndex, countRowName, freeTextRow,
-  staffRows, staffRowOnly,
+  staffRows, staffRowOnly, isReadOnly,
   onOpenModal, onFreeRowNameChange, onDeleteFreeRow, onClearFreeRow, onCountRowNameChange, onNameChange,
   onDeleteStaff, onClearStaff, onClearDate, onReorder,
 }: Props) {
@@ -157,13 +158,14 @@ function ShiftGrid({
                     cells={freeTextRow.cells}
                     dateColumns={dateColumns}
                     isFreeRow
+                    isReadOnly={isReadOnly}
                     onOpenModal={onOpenModal}
                     onNameChange={onFreeRowNameChange}
                     onDelete={onDeleteFreeRow}
                     onClear={onClearFreeRow}
-                    onDragStart={(idx) => handleDragStart(idx, null)}
-                    onDrop={handleDrop}
-                    onDragEnter={setDragOverIdx}
+                    onDragStart={isReadOnly ? undefined : (idx) => handleDragStart(idx, null)}
+                    onDrop={isReadOnly ? undefined : handleDrop}
+                    onDragEnter={isReadOnly ? undefined : setDragOverIdx}
                   />
                 </Fragment>
               );
@@ -181,13 +183,14 @@ function ShiftGrid({
                   dateColumns={dateColumns}
                   aggregation={agg}
                   hideAggColumns={staffRowOnly}
+                  isReadOnly={isReadOnly}
                   onOpenModal={onOpenModal}
                   onNameChange={name => onNameChange(item.row.id, name)}
-                  onDelete={() => onDeleteStaff(item.row.id)}
-                  onClear={() => onClearStaff(item.row.id)}
-                  onDragStart={(idx) => handleDragStart(idx, item.row)}
-                  onDrop={handleDrop}
-                  onDragEnter={setDragOverIdx}
+                  onDelete={isReadOnly ? undefined : () => onDeleteStaff(item.row.id)}
+                  onClear={isReadOnly ? undefined : () => onClearStaff(item.row.id)}
+                  onDragStart={isReadOnly ? undefined : (idx) => handleDragStart(idx, item.row)}
+                  onDrop={isReadOnly ? undefined : handleDrop}
+                  onDragEnter={isReadOnly ? undefined : setDragOverIdx}
                 />
               </Fragment>
             );

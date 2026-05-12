@@ -7,6 +7,7 @@ import ShiftGrid from './ShiftGrid';
 import Toolbar from './Toolbar';
 import InputModal from './InputModal';
 import { dragBridge } from '@/lib/dragBridge';
+import { EDIT_KEY } from '@/lib/constants';
 import type { CellValue, DateColumn, ModalState } from '@/lib/types';
 
 const CLOSED_MODAL: ModalState = {
@@ -23,11 +24,13 @@ function ShiftSection({
   staffRowOnly,
   maruOnly,
   noWeekdayRestriction,
+  isReadOnly,
 }: {
   storageKey: string;
   staffRowOnly?: boolean;
   maruOnly?: boolean;
   noWeekdayRestriction?: boolean;
+  isReadOnly?: boolean;
 }) {
   const {
     shiftData, setYearMonth, setCellValue,
@@ -45,9 +48,10 @@ function ShiftSection({
 
   const openModal = useCallback(
     (rowId: string | 'free', dateKey: string, dateColumn: DateColumn, currentValue: CellValue) => {
+      if (isReadOnly) return;
       setModal({ isOpen: true, rowId, dateKey, dateColumn, currentValue, anchorRect: null });
     },
-    []
+    [isReadOnly]
   );
 
   const handleModalSelect = useCallback(
@@ -65,10 +69,11 @@ function ShiftSection({
       {!staffRowOnly && (
         <Toolbar
           yearMonth={shiftData.yearMonth}
-          onYearMonthChange={setYearMonth}
+          onYearMonthChange={isReadOnly ? undefined : setYearMonth}
           shiftData={shiftData}
           onLoadData={loadData}
-          onAddStaff={addStaffRow}
+          onAddStaff={isReadOnly ? undefined : addStaffRow}
+          isReadOnly={isReadOnly}
         />
       )}
 
@@ -82,16 +87,17 @@ function ShiftSection({
           freeTextRow={shiftData.freeTextRow}
           staffRows={shiftData.staffRows}
           staffRowOnly={staffRowOnly}
+          isReadOnly={isReadOnly}
           onOpenModal={openModal}
-          onFreeRowNameChange={setFreeRowName}
-          onDeleteFreeRow={staffRowOnly ? undefined : clearFreeRow}
-          onClearFreeRow={staffRowOnly ? undefined : clearFreeRowCells}
-          onCountRowNameChange={setCountRowName}
-          onNameChange={setStaffName}
-          onDeleteStaff={removeStaffRow}
-          onClearStaff={clearStaffCells}
-          onClearDate={clearDateColumn}
-          onReorder={staffRowOnly ? reorderStaffRows : reorderAll}
+          onFreeRowNameChange={isReadOnly ? () => {} : setFreeRowName}
+          onDeleteFreeRow={isReadOnly || staffRowOnly ? undefined : clearFreeRow}
+          onClearFreeRow={isReadOnly || staffRowOnly ? undefined : clearFreeRowCells}
+          onCountRowNameChange={isReadOnly ? undefined : setCountRowName}
+          onNameChange={isReadOnly ? () => {} : setStaffName}
+          onDeleteStaff={isReadOnly ? () => {} : removeStaffRow}
+          onClearStaff={isReadOnly ? () => {} : clearStaffCells}
+          onClearDate={isReadOnly ? () => {} : clearDateColumn}
+          onReorder={isReadOnly ? () => {} : (staffRowOnly ? reorderStaffRows : reorderAll)}
         />
       </div>
 
@@ -107,6 +113,14 @@ function ShiftSection({
 }
 
 export default function ShiftApp() {
+  const [isReadOnly, setIsReadOnly] = useState(true);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const key = params.get('key');
+    setIsReadOnly(key !== EDIT_KEY);
+  }, []);
+
   useEffect(() => {
     const beforePrint = () => {
       const grid = document.getElementById('shift-grid');
@@ -132,11 +146,16 @@ export default function ShiftApp() {
 
   return (
     <div className="bg-gray-50 overflow-auto min-h-screen">
+      {isReadOnly && (
+        <div className="no-print fixed top-2 right-2 z-50 bg-gray-700 text-white text-xs px-3 py-1 rounded-full opacity-70">
+          閲覧モード
+        </div>
+      )}
       <div className="border-b-4 border-gray-300">
-        <ShiftSection storageKey="shift-app-v1" />
+        <ShiftSection storageKey="shift-app-v1" isReadOnly={isReadOnly} />
       </div>
       <div>
-        <ShiftSection storageKey="shift-app-v2" staffRowOnly maruOnly noWeekdayRestriction />
+        <ShiftSection storageKey="shift-app-v2" staffRowOnly maruOnly noWeekdayRestriction isReadOnly={isReadOnly} />
       </div>
     </div>
   );
