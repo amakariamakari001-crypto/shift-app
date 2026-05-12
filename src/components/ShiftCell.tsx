@@ -2,10 +2,8 @@
 
 import { memo } from 'react';
 import { getCellBgColor } from '@/hooks/useDateRange';
-import { VALUE_COLORS, EXCLUDED_FROM_DAILY } from '@/lib/constants';
+import { VALUE_COLORS } from '@/lib/constants';
 import type { CellValue, DateColumn } from '@/lib/types';
-
-const ATTENDING_HIGHLIGHT = '#dbeafe'; // blue-100
 
 interface Props {
   value: CellValue;
@@ -16,16 +14,12 @@ interface Props {
   isDateHovered?: boolean;
 }
 
-function ShiftCell({ value, dateColumn, onClick, bgOverride, isReadOnly, isDateHovered }: Props) {
+function ShiftCell({ value, dateColumn, onClick, bgOverride, isReadOnly }: Props) {
   const dayBg      = getCellBgColor(dateColumn);
   const valueStyle = VALUE_COLORS[value as string];
   const hasCellBg  = new Set(['休', '振休', '有給', '半休']).has(value as string);
 
-  // 出勤扱い = 値あり かつ 休系でない
-  const isAttending = isDateHovered && value !== '' && !EXCLUDED_FROM_DAILY.has(value as string);
-  const bgColor   = isAttending
-    ? ATTENDING_HIGHLIGHT
-    : (bgOverride ?? (hasCellBg ? valueStyle.bg : (dayBg || '#ffffff')));
+  const bgColor   = bgOverride ?? (hasCellBg ? valueStyle.bg : (dayBg || '#ffffff'));
   const textColor = valueStyle ? valueStyle.text : '#1f2937';
   const outline   = hasCellBg ? `1px solid ${valueStyle.border}` : undefined;
 
