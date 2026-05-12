@@ -109,6 +109,7 @@ function StaffRow({
           value={cells[col.dateKey] ?? ''}
           dateColumn={col}
           bgOverride={rowBg}
+          isReadOnly={isReadOnly}
           onClick={() => handleCellClick(col.dateKey, col, cells[col.dateKey] ?? '')}
         />
       ))}

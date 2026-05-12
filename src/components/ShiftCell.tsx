@@ -10,9 +10,10 @@ interface Props {
   dateColumn: DateColumn;
   onClick: () => void;
   bgOverride?: string;
+  isReadOnly?: boolean;
 }
 
-function ShiftCell({ value, dateColumn, onClick, bgOverride }: Props) {
+function ShiftCell({ value, dateColumn, onClick, bgOverride, isReadOnly }: Props) {
   const dayBg      = getCellBgColor(dateColumn);
   const valueStyle = VALUE_COLORS[value as string];
   const hasCellBg  = new Set(['休', '振休', '有給', '半休']).has(value as string);
@@ -23,8 +24,8 @@ function ShiftCell({ value, dateColumn, onClick, bgOverride }: Props) {
 
   return (
     <td
-      onClick={onClick}
-      className="border border-gray-200 text-center cursor-pointer select-none transition-opacity hover:opacity-80 active:opacity-60"
+      onClick={isReadOnly ? undefined : onClick}
+      className={`border border-gray-200 text-center select-none ${isReadOnly ? 'cursor-default' : 'cursor-pointer transition-opacity hover:opacity-80 active:opacity-60'}`}
       style={{
         backgroundColor: bgColor,
         width: 44,
