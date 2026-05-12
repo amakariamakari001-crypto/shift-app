@@ -5,7 +5,6 @@ import HeaderRow from './HeaderRow';
 import StaffRow from './StaffRow';
 import AggregationRows from './AggregationRows';
 import { computeStaffAggregation, computeMaruCount } from '@/lib/aggregation';
-import { getCellBgColor } from '@/hooks/useDateRange';
 import { dragBridge } from '@/lib/dragBridge';
 import type { CellValue, DateColumn, FreeTextRowData, StaffRowData } from '@/lib/types';
 
@@ -121,13 +120,12 @@ function ShiftGrid({
               </th>
               {dateColumns.map(col => {
                 const count = computeMaruCount(staffRows, col.dateKey);
-                const bg = getCellBgColor(col);
                 return (
                   <th
                     key={col.dateKey}
                     className="sticky top-0 z-20 border border-gray-300 text-center text-xs font-semibold"
                     style={{
-                      backgroundColor: bg || '#bbf7d0',
+                      backgroundColor: '#bbf7d0',
                       width: 44, minWidth: 44,
                       color: count === 0 ? '#6b7280' : '#15803d',
                     }}

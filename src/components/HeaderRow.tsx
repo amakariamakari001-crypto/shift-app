@@ -28,14 +28,13 @@ function HeaderRow({ dateColumns, staffRows, onClearDate, isReadOnly, hoveredDat
         </td>
         {dateColumns.map(col => {
           const count = computeDailyCount(staffRows, col.dateKey);
-          const bg = getCellBgColor(col);
           const isHovered = hoveredDateKey === col.dateKey;
           return (
             <td
               key={col.dateKey}
               className="sticky z-20 border border-gray-300 text-center text-xs font-semibold cursor-default"
               style={{
-                backgroundColor: isHovered ? '#bfdbfe' : (bg || '#eff6ff'),
+                backgroundColor: isHovered ? '#bfdbfe' : '#eff6ff',
                 width: 44,
                 minWidth: 44,
                 color: count === 0 ? '#9ca3af' : '#1d4ed8',
