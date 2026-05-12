@@ -98,7 +98,7 @@ function ShiftGrid({
     >
       <table className="border-collapse" style={{ borderSpacing: 0, tableLayout: 'fixed' }}>
         {!staffRowOnly && (
-          <HeaderRow dateColumns={dateColumns} staffRows={staffRows} onClearDate={onClearDate} />
+          <HeaderRow dateColumns={dateColumns} staffRows={staffRows} onClearDate={onClearDate} isReadOnly={isReadOnly} />
         )}
 
         {staffRowOnly && (
@@ -112,6 +112,7 @@ function ShiftGrid({
                   type="text"
                   value={countRowName ?? '〇カウント'}
                   onChange={e => onCountRowNameChange?.(e.target.value)}
+                  readOnly={isReadOnly}
                   className="w-full h-full text-xs font-semibold text-green-800 bg-transparent border-0 focus:outline-none focus:ring-1 focus:ring-inset focus:ring-green-400 px-2"
                   placeholder="〇カウント"
                 />

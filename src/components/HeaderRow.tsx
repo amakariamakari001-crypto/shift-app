@@ -10,9 +10,10 @@ interface Props {
   dateColumns: DateColumn[];
   staffRows: StaffRowData[];
   onClearDate: (dateKey: string) => void;
+  isReadOnly?: boolean;
 }
 
-function HeaderRow({ dateColumns, staffRows, onClearDate }: Props) {
+function HeaderRow({ dateColumns, staffRows, onClearDate, isReadOnly }: Props) {
   return (
     <thead className="select-none">
       {/* 行1: 日付・曜日 */}
@@ -60,14 +61,16 @@ function HeaderRow({ dateColumns, staffRows, onClearDate }: Props) {
                     祝
                   </span>
                 )}
-                <button
-                  onClick={() => onClearDate(col.dateKey)}
-                  className="absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-4 flex items-center justify-center text-[9px] font-bold opacity-0 group-hover/col:opacity-100 transition-all rounded leading-none"
-                  style={{ background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5' }}
-                  title={`${col.dateKey.slice(5).replace('-','/')} の全データをクリア`}
-                >
-                  C
-                </button>
+                {!isReadOnly && (
+                  <button
+                    onClick={() => onClearDate(col.dateKey)}
+                    className="absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-4 flex items-center justify-center text-[9px] font-bold opacity-0 group-hover/col:opacity-100 transition-all rounded leading-none"
+                    style={{ background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5' }}
+                    title={`${col.dateKey.slice(5).replace('-','/')} の全データをクリア`}
+                  >
+                    C
+                  </button>
+                )}
               </div>
             </th>
           );
