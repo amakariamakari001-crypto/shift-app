@@ -37,7 +37,25 @@ function ShiftSection({
     setStaffName, setFreeRowName, clearFreeRow, clearFreeRowCells, setCountRowName,
     addStaffRow, removeStaffRow,
     clearStaffCells, clearDateColumn, insertStaffRowAt, reorderAll, reorderStaffRows,
+    undo, redo,
   } = useShiftData(storageKey);
+
+  // Ctrl+Z / Ctrl+Y キーボードショートカット
+  useEffect(() => {
+    if (isReadOnly) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      }
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+        e.preventDefault();
+        redo();
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [isReadOnly, undo, redo]);
 
   useEffect(() => {
     dragBridge.register(storageKey, removeStaffRow, insertStaffRowAt);
@@ -72,6 +90,8 @@ function ShiftSection({
           onYearMonthChange={isReadOnly ? undefined : setYearMonth}
           shiftData={shiftData}
           onAddStaff={isReadOnly ? undefined : addStaffRow}
+          onUndo={isReadOnly ? undefined : undo}
+          onRedo={isReadOnly ? undefined : redo}
           isReadOnly={isReadOnly}
         />
       )}

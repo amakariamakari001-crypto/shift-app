@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { LOCAL_STORAGE_KEY, STAFF_ROW_COUNT } from '@/lib/constants';
 import { decodeFromUrl } from '@/lib/encoding';
 import type { ShiftData, CellValue, StaffRowData } from '@/lib/types';
+
+const MAX_HISTORY = 100;
 
 function makeDefaultState(yearMonth: string): ShiftData {
   return {
@@ -57,30 +59,79 @@ export function useShiftData(storageKey: string = LOCAL_STORAGE_KEY) {
     return makeDefaultState(currentYearMonth());
   });
 
+  // 履歴管理
+  const historyRef = useRef<ShiftData[]>([]);
+  const historyIdxRef = useRef<number>(-1);
+  const skipHistoryRef = useRef<boolean>(false);
+
+  // 初回データを履歴に積む
+  const initializedRef = useRef(false);
+  useEffect(() => {
+    if (!initializedRef.current) {
+      initializedRef.current = true;
+      historyRef.current = [shiftData];
+      historyIdxRef.current = 0;
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     const timer = setTimeout(() => saveToStorage(storageKey, shiftData), 300);
     return () => clearTimeout(timer);
   }, [storageKey, shiftData]);
 
-  const setYearMonth = useCallback((ym: string) => {
-    setShiftData(prev => ({ ...prev, yearMonth: ym }));
+  // 履歴付きsetShiftData
+  const update = useCallback((updater: ((prev: ShiftData) => ShiftData) | ShiftData) => {
+    setShiftData(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      if (!skipHistoryRef.current) {
+        const sliced = historyRef.current.slice(0, historyIdxRef.current + 1);
+        sliced.push(next);
+        if (sliced.length > MAX_HISTORY) sliced.shift();
+        historyRef.current = sliced;
+        historyIdxRef.current = historyRef.current.length - 1;
+      }
+      return next;
+    });
   }, []);
+
+  const undo = useCallback(() => {
+    if (historyIdxRef.current > 0) {
+      historyIdxRef.current--;
+      skipHistoryRef.current = true;
+      setShiftData(historyRef.current[historyIdxRef.current]);
+      skipHistoryRef.current = false;
+    }
+  }, []);
+
+  const redo = useCallback(() => {
+    if (historyIdxRef.current < historyRef.current.length - 1) {
+      historyIdxRef.current++;
+      skipHistoryRef.current = true;
+      setShiftData(historyRef.current[historyIdxRef.current]);
+      skipHistoryRef.current = false;
+    }
+  }, []);
+
+  const setYearMonth = useCallback((ym: string) => {
+    update(prev => ({ ...prev, yearMonth: ym }));
+  }, [update]);
 
   const setFreeRowName = useCallback((name: string) => {
-    setShiftData(prev => ({ ...prev, freeRowName: name }));
-  }, []);
+    update(prev => ({ ...prev, freeRowName: name }));
+  }, [update]);
 
   const clearFreeRow = useCallback(() => {
-    setShiftData(prev => ({ ...prev, freeRowName: '自由記述', freeTextRow: { cells: {} } }));
-  }, []);
+    update(prev => ({ ...prev, freeRowName: '自由記述', freeTextRow: { cells: {} } }));
+  }, [update]);
 
   const clearFreeRowCells = useCallback(() => {
-    setShiftData(prev => ({ ...prev, freeTextRow: { cells: {} } }));
-  }, []);
+    update(prev => ({ ...prev, freeTextRow: { cells: {} } }));
+  }, [update]);
 
   const setCellValue = useCallback(
     (rowId: string | 'free', dateKey: string, value: CellValue) => {
-      setShiftData(prev => {
+      update(prev => {
         if (rowId === 'free') {
           return {
             ...prev,
@@ -95,46 +146,46 @@ export function useShiftData(storageKey: string = LOCAL_STORAGE_KEY) {
         };
       });
     },
-    []
+    [update]
   );
 
   const setStaffName = useCallback((staffId: string, name: string) => {
-    setShiftData(prev => ({
+    update(prev => ({
       ...prev,
       staffRows: prev.staffRows.map(row =>
         row.id === staffId ? { ...row, name } : row
       ),
     }));
-  }, []);
+  }, [update]);
 
   const addStaffRow = useCallback(() => {
-    setShiftData(prev => ({
+    update(prev => ({
       ...prev,
       staffRows: [
         ...prev.staffRows,
         { id: crypto.randomUUID(), name: `スタッフ${prev.staffRows.length + 1}`, cells: {} },
       ],
     }));
-  }, []);
+  }, [update]);
 
   const removeStaffRow = useCallback((staffId: string) => {
-    setShiftData(prev => ({
+    update(prev => ({
       ...prev,
       staffRows: prev.staffRows.filter(r => r.id !== staffId),
     }));
-  }, []);
+  }, [update]);
 
   const clearStaffCells = useCallback((staffId: string) => {
-    setShiftData(prev => ({
+    update(prev => ({
       ...prev,
       staffRows: prev.staffRows.map(r =>
         r.id === staffId ? { ...r, cells: {} } : r
       ),
     }));
-  }, []);
+  }, [update]);
 
   const clearDateColumn = useCallback((dateKey: string) => {
-    setShiftData(prev => ({
+    update(prev => ({
       ...prev,
       freeTextRow: {
         cells: { ...prev.freeTextRow.cells, [dateKey]: '' },
@@ -144,53 +195,50 @@ export function useShiftData(storageKey: string = LOCAL_STORAGE_KEY) {
         cells: { ...r.cells, [dateKey]: '' },
       })),
     }));
-  }, []);
+  }, [update]);
 
   const insertStaffRowAt = useCallback((row: StaffRowData, index: number) => {
-    setShiftData(prev => {
+    update(prev => {
       const rows = [...prev.staffRows];
       rows.splice(Math.min(index, rows.length), 0, { ...row });
       return { ...prev, staffRows: rows };
     });
-  }, []);
+  }, [update]);
 
   const setCountRowName = useCallback((name: string) => {
-    setShiftData(prev => ({ ...prev, countRowName: name }));
-  }, []);
+    update(prev => ({ ...prev, countRowName: name }));
+  }, [update]);
 
   const reorderStaffRows = useCallback((fromIndex: number, toIndex: number) => {
-    setShiftData(prev => {
+    update(prev => {
       const rows = [...prev.staffRows];
       const [moved] = rows.splice(fromIndex, 1);
       const insertAt = toIndex > fromIndex ? toIndex - 1 : toIndex;
       rows.splice(insertAt, 0, moved);
       return { ...prev, staffRows: rows };
     });
-  }, []);
+  }, [update]);
 
   const reorderAll = useCallback((fromIndex: number, toIndex: number) => {
-    setShiftData(prev => {
+    update(prev => {
       const freeIdx = prev.freeRowIndex ?? 0;
-      // Build unified ID list: [staffIds...with 'free' inserted at freeIdx]
       const ids: string[] = [];
       prev.staffRows.slice(0, freeIdx).forEach(r => ids.push(r.id));
       ids.push('free');
       prev.staffRows.slice(freeIdx).forEach(r => ids.push(r.id));
-      // Move item
       const [moved] = ids.splice(fromIndex, 1);
       const insertAt = toIndex > fromIndex ? toIndex - 1 : toIndex;
       ids.splice(insertAt, 0, moved);
-      // Derive new freeRowIndex and staffRows order
       const newFreeIdx = ids.indexOf('free');
       const staffMap = new Map(prev.staffRows.map(r => [r.id, r]));
       const newStaffRows = ids.filter(id => id !== 'free').map(id => staffMap.get(id)!);
       return { ...prev, freeRowIndex: newFreeIdx, staffRows: newStaffRows };
     });
-  }, []);
+  }, [update]);
 
   const loadData = useCallback((data: ShiftData) => {
-    setShiftData(data);
-  }, []);
+    update(data);
+  }, [update]);
 
   return {
     shiftData,
@@ -209,5 +257,7 @@ export function useShiftData(storageKey: string = LOCAL_STORAGE_KEY) {
     reorderStaffRows,
     reorderAll,
     loadData,
+    undo,
+    redo,
   };
 }

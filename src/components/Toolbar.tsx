@@ -1,6 +1,6 @@
 'use client';
 
-import { Link, Printer, FileImage, Plus } from 'lucide-react';
+import { Link, Printer, FileImage, Plus, Undo2, Redo2 } from 'lucide-react';
 import type { ShiftData } from '@/lib/types';
 import { encodeToUrl } from '@/lib/encoding';
 import { exportToPdf } from '@/lib/exportPdf';
@@ -10,10 +10,12 @@ interface Props {
   onYearMonthChange?: (ym: string) => void;
   shiftData: ShiftData;
   onAddStaff?: () => void;
+  onUndo?: () => void;
+  onRedo?: () => void;
   isReadOnly?: boolean;
 }
 
-export default function Toolbar({ yearMonth, onYearMonthChange, shiftData, onAddStaff, isReadOnly }: Props) {
+export default function Toolbar({ yearMonth, onYearMonthChange, shiftData, onAddStaff, onUndo, onRedo, isReadOnly }: Props) {
   function handleShareUrl() {
     const encoded = encodeToUrl(shiftData);
     const url = `${window.location.origin}${window.location.pathname}?d=${encoded}`;
@@ -69,6 +71,27 @@ export default function Toolbar({ yearMonth, onYearMonthChange, shiftData, onAdd
             <Plus size={13} />
             スタッフ追加
           </button>
+        )}
+
+        {!isReadOnly && (
+          <>
+            <button
+              onClick={onUndo}
+              className="flex items-center gap-1 px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs text-gray-600 hover:bg-gray-50 transition-colors"
+              title="元に戻す (Ctrl+Z)"
+            >
+              <Undo2 size={13} />
+              戻す
+            </button>
+            <button
+              onClick={onRedo}
+              className="flex items-center gap-1 px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs text-gray-600 hover:bg-gray-50 transition-colors"
+              title="やり直し (Ctrl+Y)"
+            >
+              <Redo2 size={13} />
+              進む
+            </button>
+          </>
         )}
 
 
