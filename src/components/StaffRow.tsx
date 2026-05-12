@@ -40,10 +40,10 @@ function StaffRow({
 
   const isDraggable = onDragStart != null && onDrop != null && index != null;
 
-  // スタッフ名ハイライト: ホバー日付があり、その日が休・振休・有給でない（空欄含む）
+  // スタッフ名ハイライト: ホバー日付があり、その日が休・振休・有給のとき
   const isNameHighlighted = hoveredDateKey != null
     && !isFreeRow
-    && !ABSENT_VALUES.has(cells[hoveredDateKey] as string);
+    && ABSENT_VALUES.has(cells[hoveredDateKey] as string);
 
   return (
     <tr
@@ -58,7 +58,7 @@ function StaffRow({
       {/* ── スタッフ名セル（左固定） ── */}
       <td
         className="sticky left-0 z-10 border border-gray-200 overflow-hidden"
-        style={{ minWidth: 156, maxWidth: 156, width: 156, height: 36, padding: 0, backgroundColor: isNameHighlighted ? '#dbeafe' : (rowBg ?? '#ffffff'), transition: 'background-color 0.1s' }}
+        style={{ minWidth: 156, maxWidth: 156, width: 156, height: 36, padding: 0, backgroundColor: isNameHighlighted ? '#fee2e2' : (rowBg ?? '#ffffff'), transition: 'background-color 0.1s' }}
       >
         <div className="relative h-full flex items-center">
           {/* ドラッグハンドル（スタッフ行のみ） */}
