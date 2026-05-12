@@ -164,7 +164,7 @@ export default function ShiftApp() {
   }, []);
 
   return (
-    <div className="bg-gray-50 overflow-auto min-h-screen">
+    <div className="bg-gray-50 min-h-screen">
       {isReadOnly && (
         <div className="no-print fixed top-2 right-2 z-50 bg-gray-700 text-white text-xs px-3 py-1 rounded-full opacity-70">
           閲覧モード

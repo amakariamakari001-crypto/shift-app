@@ -21,8 +21,8 @@ function HeaderRow({ dateColumns, staffRows, onClearDate, isReadOnly, hoveredDat
       {/* 行1: 日別出勤人数（sticky） */}
       <tr>
         <td
-          className="sticky left-0 top-0 z-30 bg-blue-50 border border-gray-300 text-xs font-semibold text-blue-700 px-2 whitespace-nowrap"
-          style={{ minWidth: 156, maxWidth: 156, width: 156, height: 28 }}
+          className="sticky left-0 z-30 bg-blue-50 border border-gray-300 text-xs font-semibold text-blue-700 px-2 whitespace-nowrap"
+          style={{ minWidth: 156, maxWidth: 156, width: 156, height: 28, top: 44, position: 'sticky' }}
         >
           日別出勤人数
         </td>
@@ -33,13 +33,15 @@ function HeaderRow({ dateColumns, staffRows, onClearDate, isReadOnly, hoveredDat
           return (
             <td
               key={col.dateKey}
-              className="sticky top-0 z-20 border border-gray-300 text-center text-xs font-semibold cursor-default"
+              className="sticky z-20 border border-gray-300 text-center text-xs font-semibold cursor-default"
               style={{
                 backgroundColor: isHovered ? '#bfdbfe' : (bg || '#eff6ff'),
                 width: 44,
                 minWidth: 44,
                 color: count === 0 ? '#9ca3af' : '#1d4ed8',
                 transition: 'background-color 0.1s',
+                top: 44,
+                position: 'sticky',
               }}
               onMouseEnter={() => onDateHover?.(col.dateKey)}
               onMouseLeave={() => onDateHover?.(null)}
@@ -58,7 +60,7 @@ function HeaderRow({ dateColumns, staffRows, onClearDate, isReadOnly, hoveredDat
       <tr>
         <th
           className="sticky left-0 z-30 bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-600 whitespace-nowrap px-2 text-left"
-          style={{ minWidth: 156, maxWidth: 156, width: 156, height: 44, top: 28, position: 'sticky' }}
+          style={{ minWidth: 156, maxWidth: 156, width: 156, height: 44, top: 44 + 28, position: 'sticky' }}
         >
           スタッフ名
         </th>
@@ -74,7 +76,7 @@ function HeaderRow({ dateColumns, staffRows, onClearDate, isReadOnly, hoveredDat
                 width: 44,
                 minWidth: 44,
                 maxWidth: 44,
-                top: 28,
+                top: 44 + 28,
               }}
             >
               <div className="relative flex flex-col items-center leading-tight py-0.5">
@@ -116,13 +118,13 @@ function HeaderRow({ dateColumns, staffRows, onClearDate, isReadOnly, hoveredDat
         })}
         <th
           className="sticky z-20 bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-600 px-1 text-center"
-          style={{ minWidth: 36, width: 36, height: 44, top: 28, position: 'sticky' }}
+          style={{ minWidth: 36, width: 36, height: 44, top: 44 + 28, position: 'sticky' }}
         >
           休
         </th>
         <th
           className="sticky z-20 bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-600 px-1 text-center leading-tight"
-          style={{ minWidth: 48, width: 48, top: 28, position: 'sticky' }}
+          style={{ minWidth: 48, width: 48, top: 44 + 28, position: 'sticky' }}
         >
           〇－<br />有給
         </th>

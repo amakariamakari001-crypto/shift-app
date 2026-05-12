@@ -91,8 +91,7 @@ function ShiftGrid({
   return (
     <div
       id={staffRowOnly ? 'shift-grid-2' : 'shift-grid'}
-      className="shift-grid-scroll overflow-auto border border-gray-300 rounded-lg shadow-sm"
-      style={{ maxHeight: staffRowOnly ? undefined : 'calc(100vh - 112px)' }}
+      className="shift-grid-scroll overflow-x-auto border border-gray-300 rounded-lg shadow-sm"
       onDragLeave={e => {
         if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragOverIdx(null);
       }}
